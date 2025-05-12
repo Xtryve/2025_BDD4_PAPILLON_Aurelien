@@ -1,0 +1,33 @@
+CREATE TABLE Utilisateur(
+   id_utilisateur VARCHAR(50),
+   nom VARCHAR(50),
+   prenom VARCHAR(50),
+   email VARCHAR(50),
+   num_etudiant VARCHAR(50),
+   telephone VARCHAR(50),
+   PRIMARY KEY(id_utilisateur)
+);
+
+CREATE TABLE Materiel(
+   id_materiel VARCHAR(50),
+   nom VARCHAR(50),
+   description VARCHAR(50),
+   etat VARCHAR(50),
+   qt_dispo VARCHAR(50),
+   PRIMARY KEY(id_materiel)
+);
+
+CREATE TABLE Reservation(
+   id_reservation VARCHAR(50),
+   id_utilisateur VARCHAR(50) NOT NULL Utilisateur,
+   id_materiel VARCHAR(50) NOT NULL Materiel,
+   date_debut VARCHAR(50),
+   date_fin VARCHAR(50),
+   statut VARCHAR(50),
+   id_utilisateur_1 VARCHAR(50) NOT NULL,
+   id_materiel_1 VARCHAR(50) NOT NULL,
+   PRIMARY KEY(id_reservation),
+   FOREIGN KEY(id_utilisateur_1) REFERENCES Utilisateur(id_utilisateur),
+   FOREIGN KEY(id_materiel_1) REFERENCES Materiel(id_materiel)
+);
+
