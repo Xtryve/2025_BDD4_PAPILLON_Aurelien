@@ -1,0 +1,149 @@
+Drop table utilisateur cascade;
+Drop table materiel cascade;
+Drop table reservation cascade;
+CREATE TABLE utilisateur(
+   id_utilisateur VARCHAR(50),
+   email VARCHAR(50),
+   nom VARCHAR(50),
+   prenom VARCHAR(50),
+   num_etudiant VARCHAR(50),
+   telephone VARCHAR(50),
+   PRIMARY KEY(id_utilisateur)
+);
+ 
+CREATE TABLE materiel(
+   id_materiel VARCHAR(50),
+   objet VARCHAR(50),
+   description VARCHAR(50),
+   QT_DISPO SMALLINT,
+   PRIMARY KEY(id_materiel)
+);
+ 
+CREATE TABLE reservation(
+   id_reservation VARCHAR(50),
+   date_debut DATE,
+   date_fin DATE,
+   statut VARCHAR(50),
+   id_materiel VARCHAR(50) NOT NULL,
+   id_utilisateur VARCHAR(50) NOT NULL,
+   PRIMARY KEY(id_reservation),
+   FOREIGN KEY(id_materiel) REFERENCES materiel(id_materiel),
+   FOREIGN KEY(id_utilisateur) REFERENCES utilisateur(id_utilisateur)
+);
+
+
+Exercice 1:
+
+Ajout de données dans la table « Utilisateur »:
+INSERT INTO UTILISATEUR (ID_UTILISATEUR, EMAIL, NOM, PRENOM, NUM_ETUDIANT, TELEPHONE) VALUES
+('U01', 'alice.durand@etu.univ-tours.fr', 'Durand', 'Alice', '20231234', '0601020304'),
+('U02', 'sophie.martin@etu.univ-tours.fr', 'Martin', 'Sophie', '20231235', '0602030405'),
+('U03', 'julie.dupont@etu.univ-tours.fr', 'Dupont', 'Julie', '20231236', '0603040506'),
+('U04', 'laura.bernard@etu.univ-tours.fr', 'Bernard', 'Laura', '20231237', '0604050607'),
+('U05', 'chloe.petit@etu.univ-tours.fr', 'Petit', 'Chloe', '20231238', '0605060708'),
+('U06', 'emma.robert@etu.univ-tours.fr', 'Robert', 'Emma', '20231239', '0606070809'),
+('U07', 'lea.richard@etu.univ-tours.fr', 'Richard', 'Lea', '20231240', '0607080910'),
+('U08', 'nina.moreau@etu.univ-tours.fr', 'Moreau', 'Nina', '20231241', '0608091011'),
+('U09', 'camille.garcia@etu.univ-tours.fr', 'Garcia', 'Camille', '20231242', '0609101112'),
+('U10', 'manon.lemoine@etu.univ-tours.fr', 'Lemoine', 'Manon', '20231243', '0610111213');
+
+
+Ajout de données dans la table « Matériel »:
+INSERT INTO MATERIEL (ID_MATERIEL, OBJET, DESCRIPTION, QT_DISPO) VALUES
+('M01', 'Video-projecteur', 'Projecteur HDMI', '3'),
+('M02', 'Ordinateur portable', 'Dell i5', '5'),
+('M03', 'Micro', 'Micro USB', '7'),
+('M04', 'Camera', 'Camera HD 1080p', '2'),
+('M05', 'Enceinte Bluetooth', 'Sony portable', '4'),
+('M06', 'Tablette', 'iPad', '6'),
+('M07', 'Trepied', 'Trepied reglable pour camera', '3'),
+('M08', 'Casque audio', 'Casque avec micro', '10'),
+('M09', 'Ecran', 'Moniteur 24 pouces', '2'),
+('M10', 'Routeur WiFi', 'Routeur WiFi', '3');
+
+
+Ajout de données dans la table « Réservation »:
+INSERT INTO RESERVATION (ID_RESERVATION, DATE_DEBUT, DATE_FIN, STATUT, ID_MATERIEL, ID_UTILISATEUR) VALUES
+('R001', '2025-05-10', '2025-05-12', 'validee', 'M01', 'U01'),
+('R002', '2025-05-11', '2025-05-15', 'en attente', 'M02', 'U03'),
+('R003', '2025-05-13', '2025-05-16', 'refusee', 'M05', 'U04'),
+('R004', '2025-05-17', '2025-05-20', 'validee', 'M08', 'U09'),
+('R005', '2025-05-19', '2025-05-22', 'validee', 'M06', 'U02');
+
+
+
+Exercice 2: 
+
+Afficher les utilisateurs dont le prénom commence par "C":
+SELECT * 
+FROM UTILISATEUR
+WHERE PRENOM LIKE 'C%';
+
+Afficher les matériels dont la quantité disponible est inférieure à 4 :
+SELECT * 
+FROM MATERIEL
+WHERE CAST(QT_DISPO AS INT) < 4;
+
+Afficher les réservations validées pour la période après le 15 mai 2025 : 
+SELECT * 
+FROM RESERVATION
+WHERE STATUT = 'validée' AND DATE_DEBUT > '2025-05-15';
+
+Exercice 3 : 
+Requête de jointure sur les utilisateurs ayant effectué une réservation:
+SELECT 
+    utilisateur.id_utilisateur,
+    utilisateur.nom,
+    utilisateur.prenom,
+    utilisateur.email,
+    reservation.id_reservation,
+    reservation.date_debut,
+    reservation.date_fin,
+    reservation.statut
+FROM utilisateur
+JOIN reservation ON utilisateur.id_utilisateur = reservation.id_utilisateur;
+
+
+requête de jointure pour récupérer les informations sur le matériel emprunté par un utilisateur donné:
+
+SELECT 
+    utilisateur.id_utilisateur,
+    utilisateur.nom,
+    utilisateur.prenom,
+    utilisateur.email,
+    utilisateur.num_etudiant,
+    materiel.id_materiel,
+    materiel.objet,
+    materiel.description,
+    materiel.QT_DISPO,
+    reservation.id_reservation,
+    reservation.date_debut,
+    reservation.date_fin,
+    reservation.statut
+FROM utilisateur
+JOIN reservation ON utilisateur.id_utilisateur = reservation.id_utilisateur
+JOIN materiel ON reservation.id_materiel = materiel.id_materiel
+WHERE utilisateur.id_utilisateur = 'U02';
+
+
+Exercice 4 : 
+1)
+SELECT COUNT(*) AS nombre_reservations
+FROM reservation
+WHERE date_debut > '2025-05-10' AND date_fin < '2025-05-20';
+
+2)
+SELECT COUNT(DISTINCT reservation.id_utilisateur) AS nombre_utilisateurs
+FROM reservation
+JOIN materiel ON reservation.id_materiel = materiel.id_materiel
+WHERE materiel.objet = 'Ordinateur portable';
+
+
+
+
+
+
+
+
+
+
