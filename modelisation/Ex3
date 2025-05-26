@@ -1,0 +1,39 @@
+Exercice 3 : 
+
+Requête de jointure sur les utilisateurs ayant effectué une réservation:
+
+SELECT 
+    utilisateur.id_utilisateur,
+    utilisateur.nom,
+    utilisateur.prenom,
+    utilisateur.email,
+    reservation.id_reservation,
+    reservation.date_debut,
+    reservation.date_fin,
+    reservation.statut
+FROM utilisateur
+JOIN reservation ON utilisateur.id_utilisateur = reservation.id_utilisateur;
+
+
+Requête de jointure pour récupérer les informations sur le matériel emprunté par un utilisateur donné:
+
+SELECT 
+    utilisateur.id_utilisateur,
+    utilisateur.nom,
+    utilisateur.prenom,
+    utilisateur.email,
+    utilisateur.num_etudiant,
+    materiel.id_materiel,
+    materiel.objet,
+    materiel.description,
+    materiel.QT_DISPO,
+    reservation.id_reservation,
+    reservation.date_debut,
+    reservation.date_fin,
+    reservation.statut
+FROM utilisateur
+JOIN reservation ON utilisateur.id_utilisateur = reservation.id_utilisateur
+JOIN materiel ON reservation.id_materiel = materiel.id_materiel
+WHERE utilisateur.id_utilisateur = 'U02';
+
+
