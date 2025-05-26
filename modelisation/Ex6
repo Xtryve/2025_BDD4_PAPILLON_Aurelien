@@ -1,0 +1,21 @@
+Exercice 6 : Supprimer des données
+Requête de suppression d’une réservation existante :
+-- Supprime la réservation dont l'identifiant est 'R002'
+DELETE FROM reservation
+WHERE id_reservation = 'R002';
+
+Requête de suppression d'une réservation ou la date de retour prévue est passée:
+-- Vider la table reservation sans la supprimer
+TRUNCATE TABLE reservation RESTART IDENTITY CASCADE;
+-- Insérer les réservations avec les nouvelles dates
+INSERT INTO reservation (id_reservation, date_debut, date_fin, statut, id_materiel, id_utilisateur) VALUES
+('R001', '2025-05-10', '2025-05-30', 'validee', 'M01', 'U01'),
+('R002', '2025-05-11', '2025-05-15', 'en attente', 'M02', 'U03'), --(Supprimée)
+('R003', '2025-05-13', '2025-05-13', 'refusee', 'M05', 'U04'),--(Supprimée)
+('R004', '2025-05-17', '2025-05-14', 'validee', 'M08', 'U09'),--(Supprimée)
+('R005', '2025-05-19', '2025-06-20', 'validee', 'M06', 'U02');
+-- Supprime toutes les réservations dont la date de retour (date_fin) est antérieure à la date actuelle
+DELETE FROM reservation
+WHERE date_fin < CURRENT_DATE;
+
+
