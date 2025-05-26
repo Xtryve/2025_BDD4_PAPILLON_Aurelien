@@ -33,3 +33,24 @@ FROM materiel
 JOIN reservation ON materiel.id_materiel = reservation.id_materiel
 GROUP BY materiel.id_materiel, materiel.objet, materiel.description, materiel.qt_dispo
 HAVING COUNT(reservation.id_reservation) > 3;
+
+Afficher le nombre d’emprunts pour chaque utilisateur, ordonné par numéro d'étudiant. Les utilisateurs n'ayant pas de réservations en cours doivent également être affichés avec la valeur 0 dans le nombre d'emprunts :
+-- Vider la table reservation sans la supprimer
+TRUNCATE TABLE reservation RESTART IDENTITY CASCADE;
+-- Insérer les réservations avec les nouvelles dates
+INSERT INTO reservation (id_reservation, date_debut, date_fin, statut, id_materiel, id_utilisateur) VALUES
+('R001', '2025-05-10', '2025-05-30', 'validee', 'M01', 'U01'),
+('R002', '2025-05-11', '2025-05-15', 'en attente', 'M02', 'U03'),
+('R003', '2025-05-13', '2025-05-13', 'refusee', 'M05', 'U04'),
+('R004', '2025-05-17', '2025-05-14', 'validee', 'M08', 'U09'),
+('R005', '2025-05-19', '2025-06-20', 'validee', 'M06', 'U02');
+-- Affiche chaque utilisateur avec son nombre de réservations (emprunts)
+-- Les utilisateurs sans réservation apparaissent quand même avec un total de 0
+-- Le résultat est trié selon le numéro d'étudiant
+SELECT utilisateur.id_utilisateur, utilisateur.nom, utilisateur.prenom, utilisateur.num_etudiant, 
+       COUNT(reservation.id_reservation) AS nb_emprunts
+FROM utilisateur
+LEFT JOIN reservation ON utilisateur.id_utilisateur = reservation.id_utilisateur
+GROUP BY utilisateur.id_utilisateur, utilisateur.nom, utilisateur.prenom, utilisateur.num_etudiant
+ORDER BY utilisateur.num_etudiant;
+
