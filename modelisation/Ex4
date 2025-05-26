@@ -1,0 +1,11 @@
+Exercice 4 : 
+1)
+SELECT COUNT(*) AS nombre_reservations
+FROM reservation
+WHERE date_debut > '2025-05-10' AND date_fin < '2025-05-20';
+
+2)
+SELECT COUNT(DISTINCT reservation.id_utilisateur) AS nombre_utilisateurs
+FROM reservation
+JOIN materiel ON reservation.id_materiel = materiel.id_materiel
+WHERE materiel.objet = 'Ordinateur portable';
