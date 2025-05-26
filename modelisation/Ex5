@@ -1,0 +1,29 @@
+Exercice 5 : Mettre à jour les données
+
+Requête de modification de la quantité disponible d’un matériel :
+UPDATE materiel
+SET qt_dispo = qt_dispo - 1
+WHERE id_materiel = 'M01';
+
+Requête de modification de la quantité de tous les matériels qui sont en cours d'emprunt et la date de retour prévue dans plus de 2 jours : 
+-- Vider la table reservation sans la supprimer
+TRUNCATE TABLE reservation RESTART IDENTITY CASCADE;
+
+-- Insérer les réservations avec les nouvelles dates
+INSERT INTO reservation (id_reservation, date_debut, date_fin, statut, id_materiel, id_utilisateur) VALUES
+('R001', '2025-05-10', '2025-05-30', 'validee', 'M01', 'U01'),
+('R002', '2025-05-11', '2025-05-15', 'en attente', 'M02', 'U03'),
+('R003', '2025-05-13', '2025-05-27', 'refusee', 'M05', 'U04'),
+('R004', '2025-05-17', '2025-05-26', 'validee', 'M08', 'U09'),
+('R005', '2025-05-19', '2025-06-22', 'validee', 'M06', 'U02');
+
+-- Mise à jour des quantités disponibles des matériels empruntés dont la date de retour est dans plus de 2 jours
+UPDATE materiel
+SET qt_dispo = qt_dispo - 1
+WHERE id_materiel IN (
+    SELECT id_materiel
+    FROM reservation
+    WHERE statut = 'validee'
+      AND date_fin > CURRENT_DATE + INTERVAL '2 days'
+)
+RETURNING id_materiel, qt_dispo; -- pour retourner le ou les matériaux et la ou les quantités modifiés
