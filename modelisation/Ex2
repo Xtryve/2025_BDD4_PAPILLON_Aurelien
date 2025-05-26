@@ -1,0 +1,16 @@
+Exercice 2: 
+
+Afficher les utilisateurs dont le prénom commence par "C":
+SELECT * 
+FROM UTILISATEUR
+WHERE PRENOM LIKE 'C%';
+
+Afficher les matériels dont la quantité disponible est inférieure à 4 :
+SELECT * 
+FROM MATERIEL
+WHERE CAST(QT_DISPO AS INT) < 4;
+
+Afficher les réservations validées pour la période après le 15 mai 2025 : 
+SELECT * 
+FROM RESERVATION
+WHERE STATUT = 'validée' AND DATE_DEBUT > '2025-05-15';
