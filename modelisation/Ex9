@@ -1,0 +1,18 @@
+Création d'une nouvelle table "RetourMatériel" :
+CREATE TABLE RetourMateriel (
+    id_retour SERIAL PRIMARY KEY,  -- ID auto-incrémenté du retour
+    id_reservation VARCHAR(50) NOT NULL,  
+    date_retour DATE NOT NULL,  -- Date où le matériel est rendu
+    retard BOOLEAN DEFAULT FALSE,  -- Retard ? Vrai ou faux
+    FOREIGN KEY(id_reservation) REFERENCES reservation(id_reservation)
+);
+
+
+Modification de la table reservation pour ajouter la date de retour :
+
+ALTER TABLE reservation
+ADD COLUMN date_retour_effectif DATE;  -- Date du retour réelle
+
+Modification des contraintes SQL existantes pour prendre en compte les retours de matériel et les retards éventuels lors de la mise à jour des réservations : 
+
+
