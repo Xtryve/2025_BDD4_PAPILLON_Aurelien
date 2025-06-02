@@ -1,8 +1,7 @@
-
 alter table disponibilite drop constraint disponibilite_id_materiel_fkey;
-alter table reservation drop constraint reservation_numeroetudiant_fkey;
-alter table reservation drop constraint reservation_identifiantmateriel_fkey;
 alter table reservation drop constraint reservation_id_disponibilite_fkey;
+alter table reservation drop constraint reservation_id_materiel_fkey;
+alter table reservation drop constraint reservation_id_utilisateur_fkey;
 
 TRUNCATE TABLE reservation RESTART IDENTITY CASCADE;
 TRUNCATE TABLE disponibilite RESTART IDENTITY CASCADE;
@@ -16,12 +15,13 @@ DECLARE
     i INT;
 BEGIN
     FOR i IN 1..100000 LOOP
-        INSERT INTO utilisateur ()
+        INSERT INTO utilisateur (id_utilisateur, nom, prenom, num_etudiant, email, telephone)
         VALUES (
             i,
             'nom_' || i,
             'prenom_' || i,
-            'user_' || i || '@example.com'
+            'user_' || i || '@example.com', 
+			'telephone_' || i,
         );
     END LOOP;
 END $$;
@@ -32,7 +32,7 @@ DECLARE
     i INT;
 BEGIN
     FOR i IN 1..100000 LOOP
-        INSERT INTO materiel ()
+        INSERT INTO materiel (id_materiel, objet, description, qt_dispo)
         VALUES (
             i,
             'materiel_' || i,
@@ -54,7 +54,7 @@ BEGIN
         start_date := DATE '2025-01-01' + (random() * 365)::INT;
         end_date := start_date + (random() * 30)::INT;
 
-        INSERT INTO disponibilite ()
+        INSERT INTO disponibilite (id_disponibilite, id_materiel, date_debut, date_fin)
         VALUES (
             i,
             (random() * 999999)::INT + 1, -- Random id_materiel between 1 and 1,000,000
@@ -79,14 +79,14 @@ BEGIN
         return_date := reservation_date + (random() * 15)::INT;
 		effective_return_date := reservation_date + (random() * 15)::INT;
 
-        INSERT INTO reservation ()
+        INSERT INTO reservation (id_reservation, date_debut, date_fin, id_utilisateur, id_materiel, id_disponibilite  )
         VALUES (
             i,
             reservation_date,
             return_date,
             (random() * 999999)::INT + 1, -- Random numero_etudiant between 1 and 1,000,000
             (random() * 999999)::INT + 1,  -- Random identifiant_materiel between 1 and 1,000,000
-			(random() * 999999)::INT + 1 , -- Random identifiant_materiel between 1 and 1,000,000
+			(random() * 999999)::INT + 1 , -- Random identifiant_disponibilite between 1 and 1,000,000
 			effective_return_date
         );
     END LOOP;
