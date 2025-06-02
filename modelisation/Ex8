@@ -1,8 +1,79 @@
 1) Ajout de la table disponibilite : 
 CREATE TABLE disponibilite (
     id_disponibilite SERIAL PRIMARY KEY,
-    id_materiel INT NOT NULL,
+    id_materiel VARCHAR(50) NOT NULL,
     date_debut DATE NOT NULL,
     date_fin DATE NOT NULL,
-    FOREIGN KEY(id_materiel) REFERENCES materiel(id_materiel)
+    FOREIGN KEY (id_materiel) REFERENCES materiel(id_materiel)
 );
+
+2) Modification de la table "reservation" en ajoutant une nouvelle colonne "id_disponibilite" (clé étrangère référençant la table "disponibilite") :
+ALTER TABLE reservation 
+ADD COLUMN id_disponibilite INT,
+ADD FOREIGN KEY (id_disponibilite) REFERENCES disponibilite(id_disponibilite);
+
+3) Modification des contraintes SQL existantes pour prendre en compte les contraintes de disponibilité lors de la création et de la mise à jour des réservations :
+On verifie si les dates de fin sont bien apres les dates de debut (PS : erreur car j'ai une date de fin avant une date de debut ce qui verifie bien le check) 
+ALTER TABLE reservation
+ADD CONSTRAINT chk_dates_reservation CHECK (date_fin > date_debut);
+
+4) Implémentation d'une fonctionnalité permettant de vérifier la disponibilité d'un matériel pour une période donnée avant de permettre la réservation. Si le matériel n'est pas disponible, affichez un message d'erreur approprié.
+Dans notre cas le matériel M01 avce les dates ecrites :
+SELECT 
+    CASE
+        WHEN EXISTS (
+            -- On vérifie s'il existe une disponibilité couvrant la période demandée
+            SELECT 1
+            FROM disponibilite d
+            WHERE d.id_materiel = 'M01'             -- matériel recherché
+              AND d.date_debut <= DATE '2025-05-10' -- début de la période voulue
+              AND d.date_fin >= DATE '2025-05-12'   -- fin de la période voulue
+        )
+        THEN 'Dispo'  -- Le matériel est disponible
+        ELSE 'Pas dispo'  -- Pas de disponibilité pour cette période
+    END AS statut_disponibilite;
+
+5)
+Ajouter une nouvelle disponibilité :
+INSERT INTO disponibilite (id_materiel, date_debut, date_fin) VALUES
+('M01', '2025-05-01', '2025-05-20'),  
+('M02', '2025-05-10', '2025-05-15');
+
+
+Modifier la disponibilité :
+UPDATE disponibilite
+SET date_fin = '2025-05-25' -- On prolonge la disponibilité 1
+WHERE id_disponibilite = 1; 
+
+Supprimé la disponibilité : 
+DELETE FROM disponibilite
+WHERE id_disponibilite = 2; -- Suppression de la disponibilité 2
+
+6)
+Ajout de disponibilités :
+-- Disponibilité pour le matériel M01 : du 1er au 20 mai 2025
+INSERT INTO disponibilite (id_materiel, date_debut, date_fin) VALUES
+('M01', '2025-05-01', '2025-05-20');
+
+-- Disponibilité pour le matériel M02 : du 10 au 15 mai 2025
+INSERT INTO disponibilite (id_materiel, date_debut, date_fin) VALUES
+('M02', '2025-05-10', '2025-05-15');
+
+Réservation possible : (créée)
+INSERT INTO reservation (id_reservation, date_debut, date_fin, statut, id_materiel, id_utilisateur, id_disponibilite)
+SELECT 'R010', '2025-05-05', '2025-05-10', 'validee', 'M01', 'U01', id_disponibilite
+FROM disponibilite
+WHERE id_materiel = 'M01' AND date_debut <= '2025-05-05' AND date_fin >= '2025-05-10'
+LIMIT 1;
+
+Reservation pas possible : (non créée) 
+INSERT INTO reservation (id_reservation, date_debut, date_fin, statut, id_materiel, id_utilisateur, id_disponibilite)
+SELECT 'R011', '2025-05-21', '2025-05-25', 'validee', 'M01', 'U02', id_disponibilite
+FROM disponibilite
+WHERE id_materiel = 'M01' AND date_debut <= '2025-05-21' AND date_fin >= '2025-05-25'
+LIMIT 1;
+
+
+
+
+
