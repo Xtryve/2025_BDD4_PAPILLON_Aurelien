@@ -13,6 +13,23 @@ Modification de la table reservation pour ajouter la date de retour :
 ALTER TABLE reservation
 ADD COLUMN date_retour_effectif DATE;  -- Date du retour réelle
 
-Modification des contraintes SQL existantes pour prendre en compte les retours de matériel et les retards éventuels lors de la mise à jour des réservations : 
+Implémentation d'une fonctionnalité permettant de calculer automatiquement le retard sur le retour du matériel, si applicable
+-- Exemple d'insertion d'un retour
+INSERT INTO RetourMateriel (id_retour, id_reservation, date_retour, retard)
+SELECT 
+   'RET001',
+   'R001',
+   DATE '2025-05-14',
+   CASE 
+       WHEN DATE '2025-05-14' > date_fin THEN TRUE 
+       ELSE FALSE 
+   END
+FROM Reservation
+WHERE id_reservation = 'R001';
+
+-- Mise à jour de la réservation
+UPDATE Reservation
+SET date_retour_effectif = DATE '2025-05-14'
+WHERE id_reservation = 'R001';
 
 
