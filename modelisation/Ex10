@@ -79,7 +79,7 @@ BEGIN
         return_date := reservation_date + (random() * 15)::INT;
 		effective_return_date := reservation_date + (random() * 15)::INT;
 
-        INSERT INTO reservation (id_reservation, date_debut, date_fin, id_utilisateur, id_materiel, id_disponibilite  )
+        INSERT INTO reservation (id_reservation, date_debut, date_fin, id_utilisateur, id_materiel, id_disponibilite, date_retour_effectif)
         VALUES (
             i,
             reservation_date,
@@ -91,3 +91,6 @@ BEGIN
         );
     END LOOP;
 END $$;
+
+
+
