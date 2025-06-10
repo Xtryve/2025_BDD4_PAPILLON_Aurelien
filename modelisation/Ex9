@@ -32,4 +32,48 @@ UPDATE Reservation
 SET date_retour_effectif = DATE '2025-05-14'
 WHERE id_reservation = 'R001';
 
+Implémentation d'une fonctionnalité permettant de vérifier si un retour est en retard et d'afficher le montant des pénalités, le cas échéant : 
+SELECT 
+    Reservation.id_reservation,
+    RetourMateriel.date_retour,
+    Reservation.date_fin AS date_prevue,
+    GREATEST((RetourMateriel.date_retour - Reservation.date_fin), 0) AS jours_de_retard,
+    CASE 
+        WHEN RetourMateriel.retard THEN GREATEST((RetourMateriel.date_retour - Reservation.date_fin), 0) * 2
+        ELSE 0
+    END AS montant_penalite
+FROM RetourMateriel
+JOIN Reservation ON RetourMateriel.id_reservation = Reservation.id_reservation;
+
+Verification : 
+-- R004 : date prévue de fin = 2025-05-20
+-- Retour effectué le 2025-05-20 
+
+INSERT INTO RetourMateriel (id_retour, id_reservation, date_retour, retard)
+SELECT 
+   'RET002',
+   'R004',
+   DATE '2025-05-20',
+   CASE 
+       WHEN DATE '2025-05-20' > date_fin THEN TRUE
+       ELSE FALSE
+   END
+FROM Reservation
+WHERE id_reservation = 'R004';
+
+-- R005 : date prévue de fin = 2025-05-22
+-- Retour effectué le 2025-05-25
+
+INSERT INTO RetourMateriel (id_retour, id_reservation, date_retour, retard)
+SELECT 
+   'RET003',
+   'R005',
+   DATE '2025-05-25',
+   CASE 
+       WHEN DATE '2025-05-25' > date_fin THEN TRUE
+       ELSE FALSE
+   END
+FROM Reservation
+WHERE id_reservation = 'R005';
+
 
